@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mood Tracker - VividAura{% endblock %}
+
+{% block content %}
+<div class="mood-tracker-wrapper">
+
+  <div class="mood-form-card">
+    <h2>🌈 How are you feeling today?</h2>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">💾 Save Mood</button>
+    </form>
+  </div>
+
+
+  {% if message %}
+    <div class="motivational-box">
+      <p><strong>🌟 Today's Motivation:</strong> {{ message }}</p>
+    </div>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    <div class="history-card">
+      <h3>🧠 Your Mood Entries</h3>
+      <ul class="mood-history-list">
+        {% for entry in moods %}
+          <li>
+            <span class="mood-label">{{ entry.mood }}</span> on <em>{{ entry.date }}</em><br>
+            <small>📝 {{ entry.note }} | 🎯 Focus: {{ entry.focus }} | ⚡ Energy: {{ entry.energy }}</small>
+          </li>
+        {% empty %}
+          <li>No mood entries yet!</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% else %}
+    <p class="login-hint"><em>Login to view your mood history.</em></p>
+  {% endif %}
+
+</div>
+{% endblock %}

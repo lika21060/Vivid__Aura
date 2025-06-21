@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - VividAura{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto; background-color: #fff0f6; padding: 40px 30px; border-radius: 20px; box-shadow: 0 6px 28px rgba(227, 116, 162, 0.15);">
+    <h2 style="text-align: center; margin-bottom: 25px; color: #5a3e6b;">🌷 Create Your VividAura Account</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            <div style="margin-bottom: 20px;">
+                <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 6px; font-weight: 600; color: #5e548e;">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                    <small style="color: #e53958;">{{ field.errors|striptags }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" style="width: 100%; padding: 12px; background-color: #e374a2; color: white; font-weight: bold; border: none; border-radius: 10px; transition: background-color 0.3s ease;">
+            ✨ Register
+        </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 0.95rem;">
+        Already have an account?
+        <a href="{% url 'login' %}" style="color: #d45b83; font-weight: 600;">Login here</a>
+    </p>
+</div>
+{% endblock %}

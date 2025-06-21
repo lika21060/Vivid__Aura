@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Journal - VividAura{% endblock %}
+
+{% block content %}
+<div class="journal-container">
+  <h2 class="journal-heading">Write About Your Day ✍️</h2>
+
+  <form method="POST" class="journal-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Entry</button>
+  </form>
+
+  <h3 class="journal-subheading">Past Journal Entries 📖</h3>
+  
+  <div class="journal-entries">
+    {% for entry in entries %}
+      <div class="journal-card">
+        <p class="journal-date">{{ entry.timestamp|date:"F j, Y" }}</p>
+        <p class="journal-content">{{ entry.content|linebreaks }}</p>
+      </div>
+    {% empty %}
+      <p class="empty-message">No journal entries yet. Start writing today 💗</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

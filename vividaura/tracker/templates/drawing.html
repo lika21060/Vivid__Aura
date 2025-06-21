@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="text-align:center; color:#6a4c93; margin-bottom: 30px;">🎶 Spotify Playlist + Drawing Canvas 🎨</h2>
+
+
+<div style="
+    margin-bottom: 40px; 
+    border-radius: 14px; 
+    overflow: hidden; 
+    box-shadow: 0 6px 20px rgba(106, 76, 147, 0.15);
+">
+  <iframe 
+    src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcCnTAt8CfNe" 
+    width="100%" height="152" frameborder="0" 
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+    loading="lazy" style="border:none;">
+  </iframe>
+</div>
+
+<div style="
+    background: white; 
+    max-width: 850px; 
+    margin: 0 auto; 
+    border-radius: 20px; 
+    box-shadow: 0 8px 28px rgba(106, 76, 147, 0.12);
+    padding: 20px;
+">
+  <canvas id="drawingCanvas" width="800" height="600" style="
+    display: block;
+    margin: 0 auto;
+    border: 2px solid #6a4c93;
+    border-radius: 16px;
+    background-color: white;
+    cursor: crosshair;
+  "></canvas>
+
+  <div style="margin-top: 20px; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
+   <label style="font-weight: 600; color: #6a4c93;">
+  Color: 
+  <input type="color" id="colorPicker" value="#000000" style="
+    margin-left: 6px; 
+    cursor: pointer; 
+    width: 60px; 
+    height: 40px; 
+    border: 2px solid #6a4c93; 
+    border-radius: 8px;
+    padding: 0;
+    background:none;
+    vertical-align: middle;
+  ">
+</label>
+<label style="font-weight: 600; color: #6a4c93;">
+  Brush Size: 
+  <input type="range" id="brushSize" min="1" max="50" value="5" style="
+    vertical-align: middle;
+    margin-left: 6px;
+    cursor: pointer;
+  ">
+</label>
+
+    <button id="eraserBtn" style="
+      background-color: #cda4de; 
+      border: none; 
+      padding: 10px 18px; 
+      border-radius: 12px; 
+      color: white; 
+      font-weight: 700; 
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    ">Eraser</button>
+
+    <button id="clearBtn" style="
+      background-color: #f497b2; 
+      border: none; 
+      padding: 10px 18px; 
+      border-radius: 12px; 
+      color: white; 
+      font-weight: 700; 
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    ">Clear</button>
+
+    <button id="saveBtn" style="
+      background-color: #6a4c93; 
+      border: none; 
+      padding: 10px 18px; 
+      border-radius: 12px; 
+      color: white; 
+      font-weight: 700; 
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    ">Save Drawing</button>
+  </div>
+
+  <div id="saveStatus" style="margin-top: 15px; font-weight: 600; color: #6a4c93; text-align: center;"></div>
+</div>
+
+<hr style="margin: 50px auto; max-width: 850px; border-color: #d6cce3;">
+
+<h3 style="text-align:center; color:#6a4c93; margin-bottom: 25px;">Your Saved Drawings</h3>
+
+<div id="saved-drawings" style="max-width: 850px; margin: 0 auto;">
+  {% if drawings %}
+    {% for drawing in drawings %}
+      <div class="drawing-item" style="
+        margin-bottom: 25px;
+        border: 1px solid #d6cce3; 
+        padding: 10px;
+        border-radius: 14px;
+        box-shadow: 0 3px 14px rgba(106, 76, 147, 0.08);
+        background: #f9f6fc;
+      ">
+        <img src="{{ drawing.image_base64 }}" alt="Drawing" style="max-width: 100%; height: auto; border-radius: 12px;"/>
+        <p style="margin-top: 8px; color: #8e7ab7; font-weight: 600; text-align: right;">Saved on: {{ drawing.created_at|date:"M d, Y" }}</p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p style="text-align:center; color: #aaa;">No drawings saved yet.</p>
+  {% endif %}
+</div>
+
+<script>
+
+const canvas = document.getElementById('drawingCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+let eraserMode = false;
+
+const colorPicker = document.getElementById('colorPicker');
+const brushSize = document.getElementById('brushSize');
+const eraserBtn = document.getElementById('eraserBtn');
+const clearBtn = document.getElementById('clearBtn');
+const saveBtn = document.getElementById('saveBtn');
+const saveStatus = document.getElementById('saveStatus');
+
+canvas.addEventListener('mousedown', e => {
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+});
+canvas.addEventListener('mousemove', e => {
+    if (!drawing) return;
+    ctx.lineWidth = brushSize.value;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = eraserMode ? '#ffffff' : colorPicker.value;
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+});
+canvas.addEventListener('mouseup', () => drawing = false);
+canvas.addEventListener('mouseleave', () => drawing = false);
+
+eraserBtn.addEventListener('click', () => {
+    eraserMode = !eraserMode;
+    eraserBtn.textContent = eraserMode ? 'Brush' : 'Eraser';
+    eraserBtn.style.backgroundColor = eraserMode ? '#6a4c93' : '#cda4de';
+});
+
+clearBtn.addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+saveBtn.addEventListener('click', () => {
+    const dataURL = canvas.toDataURL('image/png');
+    saveStatus.textContent = 'Saving...';
+
+    fetch("{% url 'drawing' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: new URLSearchParams({ 'image_base64': dataURL })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            saveStatus.textContent = 'Saved successfully!';
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            saveStatus.textContent = 'Error saving drawing.';
+        }
+    })
+    .catch(() => {
+        saveStatus.textContent = 'Error saving drawing.';
+    });
+});
+</script>
+
+{% endblock %}

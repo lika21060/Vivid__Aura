@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="max-width: 700px; margin: 40px auto; padding: 0 15px; font-family: 'Inter', sans-serif; color: #3b3b3b;">
+
+  <h2 style="text-align: center; color: #6a4c93; margin-bottom: 25px;">🔍 YouTube Video Search</h2>
+
+  <form method="get" action="{% url 'youtube_search' %}" style="display: flex; gap: 10px; margin-bottom: 30px; align-items: center;">
+  <input 
+    type="text" name="query" placeholder="Search YouTube videos..." value="{{ query|default:'' }}" 
+    style="flex-grow: 3; padding: 12px 15px; font-size: 1rem; border: 2px solid #cda4de; border-radius: 10px; transition: border-color 0.3s ease;"
+    onfocus="this.style.borderColor='#6a4c93'" onblur="this.style.borderColor='#cda4de'">
+  <button type="submit" style="
+    flex-grow: 1;
+    background-color: #6a4c93; 
+    color: white; 
+    border: none; 
+    border-radius: 10px; 
+    padding: 12px 20px; 
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  " 
+  onmouseover="this.style.backgroundColor='#8b6fb1'" 
+  onmouseout="this.style.backgroundColor='#6a4c93'">
+    Search
+  </button>
+</form>
+
+  {% if videos %}
+    <h3 style="color: #6a4c93; margin-bottom: 15px;">Search Results:</h3>
+    <ul style="list-style: none; padding-left: 0;">
+      {% for video in videos %}
+        <li style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #ddd; padding-bottom: 15px;">
+          <img src="{{ video.snippet.thumbnails.default.url }}" alt="{{ video.snippet.title }}" style="border-radius: 8px; flex-shrink: 0; width: 120px; height: 90px; object-fit: cover; box-shadow: 0 2px 6px rgba(106, 76, 147, 0.15);">
+          <a href="#" class="video-link" data-video-id="{{ video.id.videoId }}" style="
+            font-weight: 600; 
+            font-size: 1.05rem; 
+            color: #6a4c93; 
+            text-decoration: none;
+            max-width: 520px;
+          " onmouseover="this.style.color='#8b6fb1'" onmouseout="this.style.color='#6a4c93'">
+            {{ video.snippet.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% elif query %}
+    <p style="color: #a06ea0; font-style: italic;">No videos found for "<strong>{{ query }}</strong>".</p>
+  {% endif %}
+
+  <div id="player-container" style="margin-top: 40px; display: none; text-align: center;">
+    <h3 style="color: #6a4c93; margin-bottom: 15px;">Now Playing:</h3>
+    <iframe 
+      id="youtubePlayer" 
+      width="100%" 
+      height="360" 
+      src="" 
+      frameborder="0" 
+      allow="autoplay; encrypted-media" 
+      allowfullscreen 
+      style="border-radius: 12px; box-shadow: 0 6px 20px rgba(106, 76, 147, 0.2); max-width: 700px; margin: 0 auto;">
+    </iframe>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.video-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const videoId = e.target.dataset.videoId;
+      const player = document.getElementById('youtubePlayer');
+      player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+      document.getElementById('player-container').style.display = 'block';
+      document.getElementById('player-container').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+
+{% endblock %}

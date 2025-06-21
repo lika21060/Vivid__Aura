@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}VividAura{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  <header>
+    <div class="nav-wrapper">
+      <nav class="nav-bar">
+        <a href="{% url 'home' %}">Home</a>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'mood_tracker' %}">Mood Tracker</a>
+          <a href="{% url 'journal' %}">Journal</a>
+          <a href="{% url 'study_goals' %}">Study Goals</a>
+          <a href="{% url 'drawing' %}">Drawing</a>
+          <a href="{% url 'youtube_search' %}">YouTube Videos</a>
+          <a href="{% url 'monthly_mood_summary' %}">Monthly Summary</a>
+          <span class="streak-text">
+            🔥 Streak: <span class="streak-count">{{ mood_streak }} day{% if mood_streak != 1 %}s{% endif %}</span>
+          </span>
+          <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}">Login</a>
+          <a href="{% url 'register' %}">Register</a>
+          <a href="{% url 'mood_tracker' %}">Explore Mood Tracker</a>
+          <a href="{% url 'study_goals' %}"> Goals</a>
+          <a href="{% url 'drawing' %}">Drawing</a>
+          <a href="{% url 'youtube_search' %}">YouTube Videos</a>
+          <a href="{% url 'monthly_mood_summary' %}">Monthly Summary</a>
+          <span class="streak-text">
+            🔥 Streak: <span class="streak-count">{{ mood_streak }} day{% if mood_streak != 1 %}s{% endif %}</span>
+          </span>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>&copy; {% now "Y" %} VividAura · Crafted with 💖 for your mind</p>
+  </footer>
+
+</body>
+</html>

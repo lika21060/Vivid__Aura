@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-top: 24px;">
+  <h2 style="text-align:center; margin-bottom: 24px; color: #5a3e6b; font-weight: 700;">
+    Monthly Mood Summary – {{ month_name }} {{ year }}
+  </h2>
+</div>
+
+
+<div style="max-width: 900px; margin: 0 auto; overflow-x: auto; box-shadow: 0 4px 20px rgba(227, 116, 162, 0.1); border-radius: 16px; background: #fff0f6; padding: 16px;">
+  <table style="width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden;">
+    <thead style="background-color: #e374a2; color: white;">
+      <tr>
+        <th style="padding: 14px;">📅 Date</th>
+        <th style="padding: 14px;">😊 Mood</th>
+        <th style="padding: 14px;">🎯 Focus</th>
+        <th style="padding: 14px;">⚡ Energy</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for day in full_month %}
+        <tr style="background-color: #fff6fb; transition: background-color 0.3s ease;">
+          <td style="padding: 12px; border-bottom: 1px solid #fcbad3;">{{ day.date }}</td>
+
+          
+          <td style="padding: 12px; border-bottom: 1px solid #fcbad3;">
+            <span style="background: #fce1ec; color: #e374a2; padding: 6px 12px; border-radius: 12px;">
+              {{ day.mood }}
+            </span>
+          </td>
+          <td style="padding: 12px; border-bottom: 1px solid #fcbad3;">
+            <span style="background: #d0f0f6; color: #3a8b95; padding: 6px 12px; border-radius: 12px;">
+              {{ day.focus }}
+            </span>
+          </td>
+          <td style="padding: 12px; border-bottom: 1px solid #fcbad3;">
+            <span style="background: #e3fcef; color: #389e6f; padding: 6px 12px; border-radius: 12px;">
+              {{ day.energy }}
+            </span>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4" style="padding: 16px; text-align: center; color: #a476be;">No data for this month.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

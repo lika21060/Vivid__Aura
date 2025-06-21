@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body_class %}home-bg{% endblock %}
+
+{% block title %}Welcome to VividAura{% endblock %}
+
+{% block content %}
+<div class="carousel-container">
+  <div class="carousel-slide active" style="background-image: url('https://i0.wp.com/caseymccall.com/wp-content/uploads/2025/04/therapy.webp?fit=2000%2C1125&ssl=1');"></div>
+  <div class="carousel-slide" style="background-image: url('https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/23016420/GettyImages_1324376942.jpg?quality=90&strip=all&crop=0%2C2.6807861095211%2C100%2C94.638427780958&w=2400');"></div>
+  <div class="carousel-slide" style="background-image: url('https://wp.technologyreview.com/wp-content/uploads/2021/11/Unknown-2.jpeg');"></div>
+
+  <button class="prev-btn" aria-label="Previous slide">&#10094;</button>
+  <button class="next-btn" aria-label="Next slide">&#10095;</button>
+</div>
+
+
+<div class="quote-of-day-box">
+  <strong>Quote of the Day:</strong> “{{ quote_of_the_day }}”
+</div>
+
+<section class="vivid-stats-section">
+  <div class="vivid-stat pink">
+    <div class="icon-circle">💡</div>
+    <h2>1.2k+</h2>
+    <p>Mood Check-Ins Logged</p>
+  </div>
+  <div class="vivid-stat pink highlighted">
+    <div class="icon-circle">🧠</div>
+    <h2>92%</h2>
+    <p>Users Feel Mentally Better</p>
+  </div>
+  <div class="vivid-stat pink">
+    <div class="icon-circle">🎯</div>
+    <h2>950+</h2>
+    <p>Study Goals Achieved</p>
+  </div>
+</section>
+
+<script>
+  const slides = document.querySelectorAll('.carousel-slide');
+  const prevBtn = document.querySelector('.prev-btn');
+  const nextBtn = document.querySelector('.next-btn');
+  let currentIndex = 0;
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === index);
+    });
+  }
+
+  prevBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    showSlide(currentIndex);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    showSlide(currentIndex);
+  });
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    showSlide(currentIndex);
+  }, 6000);
+</script>
+{% endblock %}
